@@ -1,4 +1,5 @@
-﻿# =========================
+﻿
+# =========================
 # 1. Construction du frontend
 # =========================
 FROM node:22 AS frontend
@@ -11,6 +12,7 @@ RUN npm ci
 COPY resources ./resources
 COPY public ./public
 COPY vite.config.js ./
+
 RUN npm run build
 
 
@@ -65,5 +67,4 @@ RUN composer dump-autoload --optimize \
 
 EXPOSE 10000
 
-CMD ["sh", "-c", "sed -i \"s/Listen 80/Listen ${PORT:-10000}/\" /etc/apache2/ports.conf && sed -i \"s/:80>/:${PORT:-10000}>/\" /etc/apache2/sites-available/000-default.conf && php artisan config:clear && apache2-foreground"]
-
+CMD ["sh", "-c", "sed -i \"s/Listen 80/Listen ${PORT:-10000}/\" /etc/apache2/ports.conf && sed -i \"s/:80>/:${PORT:-10000}>/\" /etc/apache2/sites-available/000-default.conf && php artisan config:clear && php artisan migrate --force && apache2-foreground"]
